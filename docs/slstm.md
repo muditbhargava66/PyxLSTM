@@ -70,6 +70,5 @@ For more details on using the sLSTM, refer to the API documentation and examples
 
 - Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural computation, 9(8), 1735-1780.
 - Gers, F. A., Schmidhuber, J., & Cummins, F. (2000). Learning to forget: Continual prediction with LSTM. Neural computation, 12(10), 2451-2471.
-```
 
 ---

@@ -77,6 +77,5 @@ For more details on using the mLSTM, refer to the API documentation and examples
 
 - Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural computation, 9(8), 1735-1780.
 - Graves, A., Wayne, G., & Danihelka, I. (2014). Neural turing machines. arXiv preprint arXiv:1410.5401.
-```
 
 ---
