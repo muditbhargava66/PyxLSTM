@@ -251,11 +251,11 @@ We hope you find PyxLSTM useful for your sequence modeling projects!
 
 ## Star History
 
-<a href="https://star-history.com/#muditbhargava66/PyxLSTM.git&Date">
+<a href="https://star-history.com/#muditbhargava66/PyxLSTM&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=muditbhargava66/PyxLSTM.git&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=muditbhargava66/PyxLSTM.git&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=muditbhargava66/PyxLSTM.git&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=muditbhargava66/PyxLSTM&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=muditbhargava66/PyxLSTM&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=muditbhargava66/PyxLSTM&type=Date" />
  </picture>
 </a>
 
