@@ -155,6 +155,21 @@ xLSTM/
 
 The documentation for PyxLSTM can be found in the `docs` directory. It provides detailed information about the library's components, usage guidelines, and examples.
 
+## Citation
+
+If you use PyxLSTM in your research or projects, please cite the original xLSTM paper:
+
+```bibtex
+@article{Beck2024xLSTM,
+  title={xLSTM: Extended Long Short-Term Memory},
+  author={Beck, Maximilian and Pöppel, Korbinian and Spanring, Markus and Auer, Andreas and Prudnikova, Oleksandra and Kopp, Michael and Klambauer, Günter and Brandstetter, Johannes and Hochreiter, Sepp},
+  journal={arXiv preprint arXiv:2405.04517},
+  year={2024}
+}
+```
+
+Paper link: [https://arxiv.org/abs/2405.04517](https://arxiv.org/abs/2405.04517)
+
 ## Contributing
 
 Contributions to PyxLSTM are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.
@@ -175,5 +190,15 @@ For any questions or inquiries, please contact the project maintainer:
 - GitHub: [@muditbhargava66](https://github.com/muditbhargava66)
 
 I hope you find PyxLSTM useful for your sequence modeling projects!
+
+## Star History
+
+<a href="https://star-history.com/#muditbhargava66/PyxLSTM.git&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=muditbhargava66/PyxLSTM.git&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=muditbhargava66/PyxLSTM.git&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=muditbhargava66/PyxLSTM.git&type=Date" />
+ </picture>
+</a>
 
 ---

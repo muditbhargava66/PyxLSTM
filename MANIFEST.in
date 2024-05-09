@@ -1,0 +1,11 @@
+include LICENSE
+include README.md
+include requirements.txt
+
+recursive-include xLSTM *.py
+recursive-include scripts *.py
+recursive-include data *.py
+recursive-include utils *.py
+recursive-include tests *.py
+recursive-include docs *.md
+recursive-include examples *.py
