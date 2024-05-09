@@ -1,6 +1,6 @@
 # PyxLSTM
 
-PyxLSTM is a Python library that provides an efficient and extensible implementation of the Extended Long Short-Term Memory (xLSTM) architecture based on the this [Research Paper](https://arxiv.org/abs/2405.04517). xLSTM enhances the traditional LSTM by introducing exponential gating, memory mixing, and a matrix memory structure, enabling improved performance and scalability for sequence modeling tasks.
+PyxLSTM is a Python library that provides an efficient and extensible implementation of the Extended Long Short-Term Memory (xLSTM) architecture based on the research paper ["xLSTM: Extended Long Short-Term Memory"](https://arxiv.org/abs/2405.04517) by Beck et al. (2024). xLSTM enhances the traditional LSTM by introducing exponential gating, memory mixing, and a matrix memory structure, enabling improved performance and scalability for sequence modeling tasks.
 
 ## Features
 
@@ -95,7 +95,6 @@ xLSTM/
 │   └── test_model.py
 │
 ├── docs/
-│   ├── README.md
 │   ├── slstm.md
 │   ├── mlstm.md
 │   └── training.md
@@ -105,6 +104,7 @@ xLSTM/
 │
 ├── .gitignore
 ├── setup.py
+├── MANIFEST.in
 ├── requirements.txt
 ├── README.md
 └── LICENSE
@@ -151,6 +151,64 @@ xLSTM/
 - README.md: Project README file.
 - LICENSE: Project license file.
 
+## Running and Testing the Codebase
+
+To run and test the PyxLSTM codebase, follow these steps:
+
+1. Clone the PyxLSTM repository:
+   ```bash
+   git clone https://github.com/yourusername/PyxLSTM.git
+   ```
+
+2. Navigate to the cloned directory:
+   ```bash
+   cd PyxLSTM
+   ```
+
+3. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Run the unit tests:
+   ```bash
+   python -m unittest discover tests
+   ```
+   This command will run all the unit tests located in the `tests` directory. It will execute the test files `test_slstm.py`, `test_mlstm.py`, `test_block.py`, and `test_model.py`.
+
+5. If all the tests pass successfully, you can proceed to run the example script:
+   ```bash
+   python examples/language_modeling.py --config path/to/config.yaml
+   ```
+   Replace `path/to/config.yaml` with the actual path to your configuration file. The configuration file should specify the dataset paths, model hyperparameters, and other settings.
+
+   The `language_modeling.py` script will train an xLSTM model on the specified dataset using the provided configuration.
+
+6. Monitor the training progress and metrics:
+   During training, the script will display the training progress, including the current epoch, training loss, and validation loss. Keep an eye on these metrics to ensure the model is learning properly.
+
+7. Evaluate the trained model:
+   After training, you can evaluate the trained model on a test dataset using the `evaluate.py` script:
+   ```bash
+   python scripts/evaluate.py --test_data path/to/test_data.txt --vocab_file path/to/vocab.txt --checkpoint_path path/to/checkpoint.pt
+   ```
+   Replace the placeholders with the actual paths to your test data, vocabulary file, and the checkpoint file generated during training.
+
+   The `evaluate.py` script will load the trained model from the checkpoint and evaluate its performance on the test dataset, providing metrics such as test loss and perplexity.
+
+8. Generate text using the trained model:
+   You can use the trained model to generate text using the `generate.py` script:
+   ```bash
+   python scripts/generate.py --vocab_file path/to/vocab.txt --checkpoint_path path/to/checkpoint.pt --prompt "Your prompt text"
+   ```
+   Replace the placeholders with the actual paths to your vocabulary file, checkpoint file, and provide a prompt text to initiate the generation.
+
+   The `generate.py` script will load the trained model and generate text based on the provided prompt.
+
+These steps should help you run and test the PyxLSTM codebase. Make sure you have the necessary dependencies installed and the required data files (train, validation, and test datasets) available.
+
+If you encounter any issues or have further questions, please refer to the PyxLSTM documentation or reach out to the maintainers for assistance.
+
 ## Documentation
 
 The documentation for PyxLSTM can be found in the `docs` directory. It provides detailed information about the library's components, usage guidelines, and examples.
@@ -189,7 +247,7 @@ For any questions or inquiries, please contact the project maintainer:
 - Name: Mudit Bhargava
 - GitHub: [@muditbhargava66](https://github.com/muditbhargava66)
 
-I hope you find PyxLSTM useful for your sequence modeling projects!
+We hope you find PyxLSTM useful for your sequence modeling projects!
 
 ## Star History
 
