@@ -24,7 +24,7 @@ pip install PyxLSTM
 Alternatively, you can clone the repository and install it manually:
 
 ```bash
-git clone https://github.com/yourusername/PyxLSTM.git
+git clone https://github.com/muditbhargava66/PyxLSTM.git
 cd PyxLSTM
 pip install -r requirements.txt
 python setup.py install
@@ -157,7 +157,7 @@ To run and test the PyxLSTM codebase, follow these steps:
 
 1. Clone the PyxLSTM repository:
    ```bash
-   git clone https://github.com/yourusername/PyxLSTM.git
+   git clone https://github.com/muditbhargava66/PyxLSTM.git
    ```
 
 2. Navigate to the cloned directory:
