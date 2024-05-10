@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PyxLSTM"
+version = "1.0.0"
+authors = [
+    { name = "Mudit Bhargava", email = "muditbhargava666@gmail.com" },
+]
+description = "PyxLSTM: An efficient and extensible implementation of the xLSTM architecture"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+keywords = ["xLSTM", "LSTM", "language modeling", "sequence modeling"]
+dependencies = [
+    "torch>=1.10.0",
+    "numpy>=1.21.0",
+    "pyyaml>=6.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/muditbhargava66/PyxLSTM"
+Repository = "https://github.com/muditbhargava66/PyxLSTM"
+Issues = "https://github.com/muditbhargava66/PyxLSTM/issues"
+
+[project.license]
+file = "LICENSE"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["xLSTM*"]

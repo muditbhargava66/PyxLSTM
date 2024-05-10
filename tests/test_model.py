@@ -5,7 +5,7 @@ from xLSTM.model import xLSTM
 class TestXLSTMModel(unittest.TestCase):
     def setUp(self):
         self.vocab_size = 100
-        self.embedding_size = 50
+        self.embedding_size = 64
         self.hidden_size = 64
         self.num_layers = 2
         self.num_blocks = 3

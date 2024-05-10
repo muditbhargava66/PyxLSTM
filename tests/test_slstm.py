@@ -4,8 +4,8 @@ from xLSTM.slstm import sLSTM
 
 class TestSLSTM(unittest.TestCase):
     def setUp(self):
-        self.input_size = 10
-        self.hidden_size = 20
+        self.input_size = 64
+        self.hidden_size = 64
         self.num_layers = 2
         self.dropout = 0.1
         self.batch_size = 4
@@ -26,7 +26,7 @@ class TestSLSTM(unittest.TestCase):
         input_seq = torch.randn(self.batch_size, self.seq_length, self.input_size, requires_grad=True)
         output_seq, _ = slstm(input_seq)
 
-        target = torch.randn(self.batch_size, self.seq_length, self.hidden_size)
+        target = torch.randn(self.batch_size, self.seq_length, self.hidden_size, requires_grad=True)
         loss = torch.nn.MSELoss()(output_seq, target)
         loss.backward()
 
