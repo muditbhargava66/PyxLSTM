@@ -38,18 +38,18 @@ The equations governing the mLSTM are as follows:
   $o_t = sigmoid(W_o x_t + b_o)$
 
 - Key:
-  $k_t = W_k * x_t + b_k$
+  $k_t = W_k x_t + b_k$
 
 - Value:
-  $v_t = W_v * x_t + b_v$
+  $v_t = W_v x_t + b_v$
 
 - Query:
-  $q_t = W_q * x_t + b_q$
+  $q_t = W_q x_t + b_q$
 
 where:
 - $x_t$ is the input vector at time step $t$.
-- $W_*$ and $w_*$ are weight matrices and vectors, respectively.
-- $b_*$ are bias vectors.
+- $W_\ast$ and $w_\ast$ are weight matrices and vectors, respectively.
+- $b_\ast$ are bias vectors.
 
 ## Parallelization
 
