@@ -211,7 +211,7 @@ If you encounter any issues or have further questions, please refer to the PyxLS
 
 ## Documentation
 
-The documentation for PyxLSTM can be found in the `docs` directory. It provides detailed information about the library's components, usage guidelines, and examples.
+The documentation for PyxLSTM can be found in the [docs](docs/) directory. It provides detailed information about the library's components, usage guidelines, and examples.
 
 ## Citation
 
@@ -234,7 +234,7 @@ Contributions to PyxLSTM are welcome! If you find any issues or have suggestions
 
 ## License
 
-PyxLSTM is released under the MIT License. See the `LICENSE` file for more information.
+PyxLSTM is released under the [MIT License](LICENSE). See the `LICENSE` file for more information.
 
 ## Acknowledgements
 
