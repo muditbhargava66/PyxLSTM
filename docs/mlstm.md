@@ -20,36 +20,36 @@ The mLSTM replaces the scalar memory cell state with a matrix memory structure (
 The equations governing the mLSTM are as follows:
 
 - Cell State Update:
-  C_t = f_t * C_{t-1} + i_t * v_t * k_t^T
+  $C_t = f_t C_{t-1} + i_t v_t k_t^T$
 
 - Normalizer State Update:
-  n_t = f_t * n_{t-1} + i_t * k_t
+  $n_t = f_t n_{t-1} + i_t k_t$
 
 - Hidden State Update:
-  h_t = o_t * tanh(C_t * q_t / max(||n_t^T * q_t||, 1))
+  $h_t = o_t \odot \frac{C_t q_t}{max\{ |n_t^T q_t|, 1 \}}$
 
 - Input Gate:
-  i_t = exp(w_i^T * x_t + b_i)
+  $i_t = exp(w_i^T x_t + b_i)$
 
 - Forget Gate:
-  f_t = sigmoid(w_f^T * x_t + b_f)
+  $f_t = sigmoid(w_f^T x_t + b_f)$
 
 - Output Gate:
-  o_t = sigmoid(W_o * x_t + b_o)
+  $o_t = sigmoid(W_o x_t + b_o)$
 
 - Key:
-  k_t = W_k * x_t + b_k
+  $k_t = W_k * x_t + b_k$
 
 - Value:
-  v_t = W_v * x_t + b_v
+  $v_t = W_v * x_t + b_v$
 
 - Query:
-  q_t = W_q * x_t + b_q
+  $q_t = W_q * x_t + b_q$
 
 where:
-- x_t is the input vector at time step t
-- W_* and w_* are weight matrices and vectors
-- b_* are bias vectors
+- $x_t$ is the input vector at time step $t$.
+- $W_*$ and $w_*$ are weight matrices and vectors, respectively.
+- $b_*$ are bias vectors.
 
 ## Parallelization
 
