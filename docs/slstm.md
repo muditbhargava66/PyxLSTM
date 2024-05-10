@@ -6,11 +6,11 @@ The sLSTM (Scalar Long Short-Term Memory) is a variant of the LSTM architecture 
 
 The sLSTM architecture consists of the following components:
 
-- Input Gate (i): Controls the flow of input information into the memory cell.
-- Forget Gate (f): Determines the amount of information to retain or forget from the previous memory cell state.
-- Output Gate (o): Controls the flow of information from the memory cell to the hidden state.
-- Cell State (c): Stores the long-term memory information.
-- Hidden State (h): Represents the output of the sLSTM at each time step.
+- Input Gate ($i$): Controls the flow of input information into the memory cell.
+- Forget Gate ($f$): Determines the amount of information to retain or forget from the previous memory cell state.
+- Output Gate ($o$): Controls the flow of information from the memory cell to the hidden state.
+- Cell State ($c$): Stores the long-term memory information.
+- Hidden State ($h$): Represents the output of the sLSTM at each time step.
 
 The sLSTM introduces exponential gating for the input and forget gates, which allows for more fine-grained control over the memory updates. It also incorporates memory mixing, where the hidden state from the previous time step is used to modulate the gates and cell state update.
 
@@ -19,30 +19,30 @@ The sLSTM introduces exponential gating for the input and forget gates, which al
 The equations governing the sLSTM are as follows:
 
 - Cell State Update:
-  c_t = f_t * c_{t-1} + i_t * z_t
+  $c_t = f_t \odot c_{t-1} + i_t \odot z_t$
 
 - Normalizer State Update:
-  n_t = f_t * n_{t-1} + i_t
+  $n_t = f_t \odot n_{t-1} + i_t$
 
 - Hidden State Update:
-  h_t = o_t * tanh(c_t / n_t)
+  $h_t = o_t \odot \tanh(c_t \odot n_t^{-1})$
 
 - Input Gate:
-  i_t = exp(W_i * x_t + R_i * h_{t-1} + b_i)
+  $i_t = \exp(W_i x_t + b_i)$
 
 - Forget Gate:
-  f_t = sigmoid(W_f * x_t + R_f * h_{t-1} + b_f)
+  $f_t = \exp(W_f x_t + b_f)$
 
 - Output Gate:
-  o_t = sigmoid(W_o * x_t + R_o * h_{t-1} + b_o)
+  $o_t = \sigmoid(W_o h_t + b_o)$
 
 - Cell Input:
-  z_t = tanh(W_z * x_t + R_z * h_{t-1} + b_z)
+  $z_t = 0$
 
 where:
-- x_t is the input vector at time step t
-- W_* and R_* are weight matrices
-- b_* are bias vectors
+- $x_t$ is the input vector at time step $t$
+- $W_*$ are weight matrices
+- $b_*$ are bias vectors
 
 ## Initialization and Training
 
@@ -68,7 +68,6 @@ For more details on using the sLSTM, refer to the API documentation and examples
 
 ## References
 
-- Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural computation, 9(8), 1735-1780.
-- Gers, F. A., Schmidhuber, J., & Cummins, F. (2000). Learning to forget: Continual prediction with LSTM. Neural computation, 12(10), 2451-2471.
+- Beck, M., Pöppel, K., Spanring, M., Auer, A., Prudnikova, O., Kopp, M., Klambauer, G., Brandstetter, J., & Hochreiter, S. (2024). xLSTM: Extended Long Short-Term Memory. arXiv preprint arXiv:2405.04517.
 
 ---

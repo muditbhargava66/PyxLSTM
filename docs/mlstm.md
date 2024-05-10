@@ -6,14 +6,14 @@ The mLSTM (Matrix Long Short-Term Memory) is a variant of the LSTM architecture 
 
 The mLSTM architecture consists of the following components:
 
-- Input Gate (i): Controls the flow of input information into the memory cell.
-- Forget Gate (f): Determines the amount of information to retain or forget from the previous memory cell state.
-- Output Gate (o): Controls the flow of information from the memory cell to the hidden state.
-- Cell State (C): Stores the long-term memory information as a matrix.
-- Key (k) and Value (v): Represent the input information to be stored in the memory matrix.
-- Query (q): Used to retrieve information from the memory matrix.
+- Input Gate ($i$): Controls the flow of input information into the memory cell.
+- Forget Gate ($f$): Determines the amount of information to retain or forget from the previous memory cell state.
+- Output Gate ($o$): Controls the flow of information from the memory cell to the hidden state.
+- Cell State ($C$): Stores the long-term memory information as a matrix.
+- Key ($k$) and Value ($v$): Represent the input information to be stored in the memory matrix.
+- Query ($q$): Used to retrieve information from the memory matrix.
 
-The mLSTM replaces the scalar memory cell state with a matrix memory structure (C). The input information is represented as key-value pairs, where the keys are used to update the memory matrix, and the values are stored in the matrix. The query is used to retrieve information from the memory matrix.
+The mLSTM replaces the scalar memory cell state with a matrix memory structure ($C$). The input information is represented as key-value pairs, where the keys are used to update the memory matrix, and the values are stored in the matrix. The query is used to retrieve information from the memory matrix.
 
 ## Equations
 
@@ -26,30 +26,30 @@ The equations governing the mLSTM are as follows:
   $n_t = f_t n_{t-1} + i_t k_t$
 
 - Hidden State Update:
-  $h_t = o_t \odot \frac{C_t q_t}{max\{ |n_t^T q_t|, 1 \}}$
+  $h_t = o_t \odot \tanh\left(\frac{C_t q_t}{\max\left(\|n_t^T q_t\|, 1\right)}\right)$
 
 - Input Gate:
-  $i_t = exp(w_i^T x_t + b_i)$
+  $i_t = \exp\left(w_i^T x_t\right)$
 
 - Forget Gate:
-  $f_t = sigmoid(w_f^T x_t + b_f)$
+  $f_t = \exp\left(w_f^T x_t\right)$
 
 - Output Gate:
-  $o_t = sigmoid(W_o x_t + b_o)$
+  $o_t = \sigmoid\left(W_o h_t\right)$
 
 - Key:
-  $k_t = W_k x_t + b_k$
+  $k_t = W_k x_t$
 
 - Value:
-  $v_t = W_v x_t + b_v$
+  $v_t = W_v x_t$
 
 - Query:
-  $q_t = W_q x_t + b_q$
+  $q_t = W_q x_t$
 
 where:
-- $x_t$ is the input vector at time step $t$.
-- $W_\ast$ and $w_\ast$ are weight matrices and vectors, respectively.
-- $b_\ast$ are bias vectors.
+- $x_t$ is the input vector at time step $t$
+- $W_*$ are weight matrices
+- $w_*$ are weight vectors
 
 ## Parallelization
 
@@ -75,7 +75,6 @@ For more details on using the mLSTM, refer to the API documentation and examples
 
 ## References
 
-- Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural computation, 9(8), 1735-1780.
-- Graves, A., Wayne, G., & Danihelka, I. (2014). Neural turing machines. arXiv preprint arXiv:1410.5401.
+- Beck, M., Pöppel, K., Spanring, M., Auer, A., Prudnikova, O., Kopp, M., Klambauer, G., Brandstetter, J., & Hochreiter, S. (2024). xLSTM: Extended Long Short-Term Memory. arXiv preprint arXiv:2405.04517.
 
 ---

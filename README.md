@@ -103,7 +103,7 @@ xLSTM/
 │   └── language_modeling.py
 │
 ├── .gitignore
-├── setup.py
+├── pyproject.toml
 ├── MANIFEST.in
 ├── requirements.txt
 ├── README.md

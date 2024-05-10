@@ -166,7 +166,7 @@ logs/
 *.pth
 *.ckpt
 *.pkl
-*.yaml
+# *.yaml
 *.yml
 config/
 data/

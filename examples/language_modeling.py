@@ -51,8 +51,41 @@ def main(args):
     print(f"Initialized optimizer with learning rate: {config.learning_rate}")
 
     # Train the model
-    train(model, train_dataset, valid_dataset, optimizer, criterion, config, device)
+    def train(model, train_dataset, valid_dataset, optimizer, criterion, config, device):
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True)
+    valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=config.batch_size)
 
+    for epoch in range(config.num_epochs):
+        model.train()
+        train_loss = 0.0
+        for batch in train_loader:
+            inputs, targets = batch
+            inputs, targets = inputs.to(device), targets.to(device)
+
+            optimizer.zero_grad()
+            outputs, _ = model(inputs)
+            loss = criterion(outputs.view(-1, len(tokenizer)), targets.view(-1))
+            loss.backward()
+            optimizer.step()
+
+            train_loss += loss.item()
+
+        train_loss /= len(train_loader)
+
+        model.eval()
+        valid_loss = 0.0
+        with torch.no_grad():
+            for batch in valid_loader:
+                inputs, targets = batch
+                inputs, targets = inputs.to(device), targets.to(device)
+
+                outputs, _ = model(inputs)
+                loss = criterion(outputs.view(-1, len(tokenizer)), targets.view(-1))
+                valid_loss += loss.item()
+
+        valid_loss /= len(valid_loader)
+
+        print(f"Epoch {epoch+1}/{config.num_epochs} - Train Loss: {train_loss:.4f} - Valid Loss: {valid_loss:.4f}")
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=str, required=True, help="Path to configuration file")
