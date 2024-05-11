@@ -39,18 +39,18 @@ class sLSTM(nn.Module):
         for t in range(seq_length):
             x = input_seq[:, t, :]
             new_hidden_state = []
-            for i, (lstm, dropout, f_gate, i_gate) in enumerate(zip(self.lstms, self.dropout_layers, self.exp_forget_gates, self.exp_input_gates)):
-                if hidden_state[i][0] is None:
+            for _ind_i, (lstm, dropout, f_gate, i_gate) in enumerate(zip(self.lstms, self.dropout_layers, self.exp_forget_gates, self.exp_input_gates)):
+                if hidden_state[_ind_i][0] is None:
                     h, c = lstm(x)
                 else:
-                    h, c = lstm(x, (hidden_state[i][0], hidden_state[i][1]))
+                    h, c = lstm(x, (hidden_state[_ind_i][0], hidden_state[_ind_i][1]))
 
                 f = torch.exp(f_gate(h))
                 i = torch.exp(i_gate(h))
                 c = f * c + i * lstm.weight_hh.new_zeros(batch_size, self.hidden_size)
                 new_hidden_state.append((h, c))
 
-                if i < self.num_layers - 1:
+                if _ind_i < self.num_layers - 1:
                     x = dropout(h)
                 else:
                     x = h
