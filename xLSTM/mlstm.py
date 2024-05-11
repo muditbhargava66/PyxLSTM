@@ -56,11 +56,11 @@ class mLSTM(nn.Module):
             values = self.W_v(x)
 
             new_hidden_state = []
-            for i, (lstm, dropout, i_gate, f_gate, o_gate) in enumerate(zip(self.lstms, self.dropout_layers, self.exp_input_gates, self.exp_forget_gates, self.output_gates)):
-                if hidden_state[i][0] is None:
+            for _ind_i, (lstm, dropout, i_gate, f_gate, o_gate) in enumerate(zip(self.lstms, self.dropout_layers, self.exp_input_gates, self.exp_forget_gates, self.output_gates)):
+                if hidden_state[_ind_i][0] is None:
                     h, C = lstm(x)
                 else:
-                    h, C = hidden_state[i]
+                    h, C = hidden_state[_ind_i]
                 
                 i = torch.exp(i_gate(x))
                 f = torch.exp(f_gate(x))
@@ -72,7 +72,7 @@ class mLSTM(nn.Module):
                 h = o * attn_output
                 new_hidden_state.append((h, C_t))
                 
-                if i < self.num_layers - 1:
+                if _ind_i < self.num_layers - 1:
                     x = dropout(h)
                 else:
                     x = h
