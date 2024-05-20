@@ -10,7 +10,7 @@ class sLSTM(nn.Module):
         self.dropout = dropout
 
         self.lstms = nn.ModuleList([nn.LSTMCell(input_size if i == 0 else hidden_size, hidden_size) for i in range(num_layers)])
-        self.dropout_layers = nn.ModuleList([nn.Dropout(dropout) for _ in range(num_layers - 1)])
+        self.dropout_layer = nn.Dropout(dropout)
 
         self.exp_forget_gates = nn.ModuleList([nn.Linear(hidden_size, hidden_size) for _ in range(num_layers)])
         self.exp_input_gates = nn.ModuleList([nn.Linear(hidden_size, hidden_size) for _ in range(num_layers)])
@@ -39,19 +39,19 @@ class sLSTM(nn.Module):
         for t in range(seq_length):
             x = input_seq[:, t, :]
             new_hidden_state = []
-            for i, (lstm, dropout, f_gate, i_gate) in enumerate(zip(self.lstms, self.dropout_layers, self.exp_forget_gates, self.exp_input_gates)):
+            for i, (lstm, f_gate, i_gate) in enumerate(zip(self.lstms, self.exp_forget_gates, self.exp_input_gates)):
                 if hidden_state[i][0] is None:
                     h, c = lstm(x)
                 else:
                     h, c = lstm(x, (hidden_state[i][0], hidden_state[i][1]))
 
                 f = torch.exp(f_gate(h))
-                i = torch.exp(i_gate(h))
-                c = f * c + i * lstm.weight_hh.new_zeros(batch_size, self.hidden_size)
+                i_g = torch.exp(i_gate(h))
+                c = f * c + i_g * lstm.weight_hh.new_zeros(batch_size, self.hidden_size)
                 new_hidden_state.append((h, c))
 
                 if i < self.num_layers - 1:
-                    x = dropout(h)
+                    x = self.dropout_layer(h)
                 else:
                     x = h
             hidden_state = new_hidden_state

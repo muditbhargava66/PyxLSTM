@@ -11,7 +11,7 @@ class mLSTM(nn.Module):
         self.dropout = dropout
 
         self.lstms = nn.ModuleList([nn.LSTMCell(input_size, hidden_size) for _ in range(num_layers)])
-        self.dropout_layers = nn.ModuleList([nn.Dropout(dropout) for _ in range(num_layers - 1)])
+        self.dropout_layer = nn.Dropout(dropout)
 
         self.W_q = nn.Linear(input_size, hidden_size)
         self.W_k = nn.Linear(input_size, hidden_size)
@@ -56,16 +56,16 @@ class mLSTM(nn.Module):
             values = self.W_v(x)
 
             new_hidden_state = []
-            for i, (lstm, dropout, i_gate, f_gate, o_gate) in enumerate(zip(self.lstms, self.dropout_layers, self.exp_input_gates, self.exp_forget_gates, self.output_gates)):
+            for i, (lstm, i_gate, f_gate, o_gate) in enumerate(zip(self.lstms, self.exp_input_gates, self.exp_forget_gates, self.output_gates)):
                 if hidden_state[i][0] is None:
                     h, C = lstm(x)
                 else:
                     h, C = hidden_state[i]
                 
-                i = torch.exp(i_gate(x))
+                i_g = torch.exp(i_gate(x))
                 f = torch.exp(f_gate(x))
 
-                C_t = f * C + i * torch.matmul(values.unsqueeze(2), keys.unsqueeze(1)).squeeze(1)
+                C_t = f * C + i_g * torch.matmul(values.unsqueeze(2), keys.unsqueeze(1)).squeeze(1)
                 attn_output = torch.matmul(queries, C_t).squeeze(2)
                 
                 o = torch.sigmoid(o_gate(h))
@@ -73,7 +73,7 @@ class mLSTM(nn.Module):
                 new_hidden_state.append((h, C_t))
                 
                 if i < self.num_layers - 1:
-                    x = dropout(h)
+                    x = self.dropout_layer(h)
                 else:
                     x = h
             hidden_state = new_hidden_state

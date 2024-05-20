@@ -16,8 +16,7 @@ class xLSTM(nn.Module):
         self.lstm_type = lstm_type
 
         self.embedding = nn.Embedding(vocab_size, embedding_size)
-        self.blocks = nn.ModuleList([xLSTMBlock(embedding_size if i == 0 else hidden_size,
-                                                hidden_size, num_layers, dropout, bidirectional, lstm_type)
+        self.blocks = nn.ModuleList([xLSTMBlock(embedding_size, hidden_size, num_layers, dropout, bidirectional, lstm_type)
                                      for i in range(num_blocks)])
         self.output_layer = nn.Linear(hidden_size, vocab_size)
 
