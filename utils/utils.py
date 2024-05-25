@@ -28,3 +28,9 @@ def log_metrics(epoch, train_loss, valid_loss):
     print(f"Train Loss: {train_loss:.4f}")
     print(f"Valid Loss: {valid_loss:.4f}")
     print("-" * 20)
+
+def get_device():
+    if torch.cuda.is_available():
+        return torch.device('cuda')
+    else:
+        return torch.device('cpu')
