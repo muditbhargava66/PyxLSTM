@@ -1,7 +1,33 @@
+"""
+sLSTM: Scalar Long Short-Term Memory
+
+This module implements the sLSTM (scalar LSTM) cell and layer as described in the paper:
+"xLSTM: Extended Long Short-Term Memory" by Beck et al. (2024).
+
+The sLSTM extends the traditional LSTM by using exponential gating and a new memory mixing technique,
+allowing for improved performance on various sequence modeling tasks.
+
+Author: Mudit Bhargava
+Date: June 2024
+"""
+
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 class sLSTM(nn.Module):
+    """
+    sLSTM layer implementation.
+
+    This layer applies multiple sLSTM cells in sequence, with optional dropout between layers.
+
+    Args:
+        input_size (int): Size of input features.
+        hidden_size (int): Size of hidden state.
+        num_layers (int): Number of sLSTM layers.
+        dropout (float, optional): Dropout probability between layers. Default: 0.0.
+    """
+
     def __init__(self, input_size, hidden_size, num_layers, dropout=0.0):
         super(sLSTM, self).__init__()
         self.input_size = input_size
@@ -9,61 +35,94 @@ class sLSTM(nn.Module):
         self.num_layers = num_layers
         self.dropout = dropout
 
-        self.lstms = nn.ModuleList([nn.LSTMCell(input_size if i == 0 else hidden_size, hidden_size) for i in range(num_layers)])
-        self.dropout_layers = nn.ModuleList([nn.Dropout(dropout) for _ in range(num_layers - 1)])
+        self.layers = nn.ModuleList([sLSTMCell(input_size if i == 0 else hidden_size, hidden_size) 
+                                     for i in range(num_layers)])
+        self.dropout_layer = nn.Dropout(dropout)
 
-        self.exp_forget_gates = nn.ModuleList([nn.Linear(hidden_size, hidden_size) for _ in range(num_layers)])
-        self.exp_input_gates = nn.ModuleList([nn.Linear(hidden_size, hidden_size) for _ in range(num_layers)])
+    def forward(self, input_seq, hidden_state=None):
+        """
+        Forward pass of the sLSTM layer.
+
+        Args:
+            input_seq (Tensor): Input sequence of shape (batch_size, seq_length, input_size).
+            hidden_state (tuple of Tensors, optional): Initial hidden state. Default: None.
+
+        Returns:
+            tuple: Output sequence and final hidden state.
+        """
+        batch_size, seq_length, _ = input_seq.size()
+        
+        if hidden_state is None:
+            hidden_state = self.init_hidden(batch_size)
+        
+        outputs = []
+        for t in range(seq_length):
+            x = input_seq[:, t, :]
+            for layer_idx, layer in enumerate(self.layers):
+                h, c = hidden_state[layer_idx]
+                h, c = layer(x, (h, c))
+                hidden_state[layer_idx] = (h, c)
+                x = self.dropout_layer(h) if layer_idx < self.num_layers - 1 else h
+            outputs.append(x)
+        
+        return torch.stack(outputs, dim=1), hidden_state
+
+    def init_hidden(self, batch_size):
+        """Initialize hidden state for all layers."""
+        return [(torch.zeros(batch_size, self.hidden_size, device=self.layers[0].weight_ih.device),
+                 torch.zeros(batch_size, self.hidden_size, device=self.layers[0].weight_ih.device))
+                for _ in range(self.num_layers)]
+
+class sLSTMCell(nn.Module):
+    """
+    sLSTM cell implementation.
+
+    This cell uses exponential gating as described in the xLSTM paper.
+
+    Args:
+        input_size (int): Size of input features.
+        hidden_size (int): Size of hidden state.
+    """
+
+    def __init__(self, input_size, hidden_size):
+        super(sLSTMCell, self).__init__()
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        
+        self.weight_ih = nn.Parameter(torch.randn(4 * hidden_size, input_size))
+        self.weight_hh = nn.Parameter(torch.randn(4 * hidden_size, hidden_size))
+        self.bias = nn.Parameter(torch.randn(4 * hidden_size))
         
         self.reset_parameters()
 
     def reset_parameters(self):
-        for lstm in self.lstms:
-            nn.init.xavier_uniform_(lstm.weight_ih)
-            nn.init.xavier_uniform_(lstm.weight_hh)
-            nn.init.zeros_(lstm.bias_ih)
-            nn.init.zeros_(lstm.bias_hh)
+        """Initialize parameters using Xavier uniform initialization."""
+        nn.init.xavier_uniform_(self.weight_ih)
+        nn.init.xavier_uniform_(self.weight_hh)
+        nn.init.zeros_(self.bias)
+
+    def forward(self, input, hx):
+        """
+        Forward pass of the sLSTM cell.
+
+        Args:
+            input (Tensor): Input tensor of shape (batch_size, input_size).
+            hx (tuple of Tensors): Previous hidden state and cell state.
+
+        Returns:
+            tuple: New hidden state and cell state.
+        """
+        h, c = hx
+        gates = F.linear(input, self.weight_ih, self.bias) + F.linear(h, self.weight_hh)
         
-        for gate in self.exp_forget_gates + self.exp_input_gates:
-            nn.init.xavier_uniform_(gate.weight)
-            nn.init.zeros_(gate.bias)
-
-    def forward(self, input_seq, hidden_state=None):
-        batch_size = input_seq.size(0)
-        seq_length = input_seq.size(1)
-
-        if hidden_state is None:
-            hidden_state = self.init_hidden(batch_size)
-
-        output_seq = []
-        for t in range(seq_length):
-            x = input_seq[:, t, :]
-            new_hidden_state = []
-            for i, (lstm, dropout, f_gate, i_gate) in enumerate(zip(self.lstms, self.dropout_layers, self.exp_forget_gates, self.exp_input_gates)):
-                if hidden_state[i][0] is None:
-                    h, c = lstm(x)
-                else:
-                    h, c = lstm(x, (hidden_state[i][0], hidden_state[i][1]))
-
-                f = torch.exp(f_gate(h))
-                i = torch.exp(i_gate(h))
-                c = f * c + i * lstm.weight_hh.new_zeros(batch_size, self.hidden_size)
-                new_hidden_state.append((h, c))
-
-                if i < self.num_layers - 1:
-                    x = dropout(h)
-                else:
-                    x = h
-            hidden_state = new_hidden_state
-            output_seq.append(x)
-
-        output_seq = torch.stack(output_seq, dim=1)
-        return output_seq, hidden_state
-
-    def init_hidden(self, batch_size):
-        hidden_state = []
-        for lstm in self.lstms:
-            h = torch.zeros(batch_size, self.hidden_size, device=lstm.weight_ih.device)
-            c = torch.zeros(batch_size, self.hidden_size, device=lstm.weight_ih.device)
-            hidden_state.append((h, c))
-        return hidden_state
+        i, f, g, o = gates.chunk(4, 1)
+        
+        i = torch.exp(i)  # Exponential input gate
+        f = torch.exp(f)  # Exponential forget gate
+        g = torch.tanh(g)
+        o = torch.sigmoid(o)
+        
+        c = f * c + i * g
+        h = o * torch.tanh(c)
+        
+        return h, c

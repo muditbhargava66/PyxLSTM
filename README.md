@@ -1,6 +1,29 @@
 # PyxLSTM
 
+![Banner](docs/images/xlstm-logo-v2.png)
+
+[![GitHub stars](https://img.shields.io/github/stars/muditbhargava66/PyxLSTM)](https://github.com/muditbhargava66/PyxLSTM/stargazers)
+[![GitHub license](https://img.shields.io/github/license/muditbhargava66/PyxLSTM)](https://github.com/muditbhargava66/PyxLSTM/blob/main/LICENSE)
+[![Python version](https://img.shields.io/badge/python-3.6%2B-blue)](https://www.python.org/downloads/)
+
 PyxLSTM is a Python library that provides an efficient and extensible implementation of the Extended Long Short-Term Memory (xLSTM) architecture based on the research paper ["xLSTM: Extended Long Short-Term Memory"](https://arxiv.org/abs/2405.04517) by Beck et al. (2024). xLSTM enhances the traditional LSTM by introducing exponential gating, memory mixing, and a matrix memory structure, enabling improved performance and scalability for sequence modeling tasks.
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Development Installation](#development-installation)
+- [Usage](#usage)
+- [Code Directory Structure](#code-directory-structure)
+- [Running and Testing the Codebase](#running-and-testing-the-codebase)
+- [Documentation](#documentation)
+- [Citation](#citation)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
+- [Contact](#contact)
+- [Star History](#star-history)
+- [TODO](#todo)
 
 ## Features
 
@@ -21,13 +44,21 @@ To install PyxLSTM, you can use pip:
 pip install PyxLSTM
 ```
 
+## Development Installation
+
+For development installation with testing dependencies:
+
+```bash
+pip install PyxLSTM[dev]
+```
+
 Alternatively, you can clone the repository and install it manually:
 
 ```bash
 git clone https://github.com/muditbhargava66/PyxLSTM.git
 cd PyxLSTM
 pip install -r requirements.txt
-python setup.py install
+pip install -e .
 ```
 
 ## Usage
@@ -35,9 +66,11 @@ python setup.py install
 Here's a basic example of how to use PyxLSTM for language modeling:
 
 ```python
+import torch
 from xLSTM.model import xLSTM
 from xLSTM.data import LanguageModelingDataset, Tokenizer
 from xLSTM.utils import load_config, set_seed, get_device
+from xLSTM.training import train  # Assuming train function is defined in training module
 
 # Load configuration
 config = load_config("path/to/config.yaml")
@@ -60,7 +93,7 @@ criterion = torch.nn.CrossEntropyLoss(ignore_index=tokenizer.pad_token_id)
 train(model, train_dataset, optimizer, criterion, config, device)
 ```
 
-For more detailed usage instructions and examples, please refer to the documentation.
+For more detailed usage instructions and examples, please refer to the [documentation](docs/).
 
 ## Code Directory Structure
 
@@ -73,15 +106,6 @@ xLSTM/
 │   ├── mlstm.py
 │   ├── block.py
 │   └── model.py
-│ 
-├── scripts/
-│   ├── train.py
-│   ├── evaluate.py
-│   └── generate.py
-│
-├── data/
-│   ├── dataset.py
-│   └── tokenizer.py
 │
 ├── utils/
 │   ├── config.py
@@ -100,7 +124,8 @@ xLSTM/
 │   └── training.md
 │
 ├── examples/
-│   └── language_modeling.py
+│   ├── language_modeling.py
+│   └── xLSTM_shape_verification.py
 │
 ├── .gitignore
 ├── pyproject.toml
@@ -110,46 +135,34 @@ xLSTM/
 └── LICENSE
 ```
 
-- xLSTM/: The main Python package containing the implementation.
+- **xLSTM/**: The main Python package containing the implementation.
   - slstm.py: Implementation of the sLSTM module.
   - mlstm.py: Implementation of the mLSTM module.
   - block.py: Implementation of the xLSTM blocks (pre and post up-projection).
   - model.py: High-level xLSTM model definition.
 
-- scripts/: Scripts for training, evaluation, and text generation.
-  - train.py: Script for training the xLSTM model.
-  - evaluate.py: Script for evaluating the trained model.
-  - generate.py: Script for generating text using the trained model.
+- **utils/**: Utility modules.
+  - `config.py`: Configuration management.
+  - `logging.py`: Logging setup.
+  - `utils.py`: Miscellaneous utility functions.
 
-- data/: Data processing utilities.
-  - dataset.py: Custom dataset classes for loading and processing data.
-  - tokenizer.py: Tokenization utilities.
+- **tests/**: Unit tests for different modules.
+  - `test_slstm.py`: Tests for sLSTM module.  
+  - `test_mlstm.py`: Tests for mLSTM module.
+  - `test_block.py`: Tests for xLSTM blocks.
+  - `test_model.py`: Tests for the overall xLSTM model.
 
-- utils/: Utility modules.
-  - config.py: Configuration management.
-  - logging.py: Logging setup.
-  - utils.py: Miscellaneous utility functions.
+- **docs/**: Documentation files.
+  - `README.md`: Main documentation file.
+  - `slstm.md`: Documentation for sLSTM.
+  - `mlstm.md`: Documentation for mLSTM.
+  - `training.md`: Training guide.
 
-- tests/: Unit tests for different modules.
-  - test_slstm.py: Tests for sLSTM module.  
-  - test_mlstm.py: Tests for mLSTM module.
-  - test_block.py: Tests for xLSTM blocks.
-  - test_model.py: Tests for the overall xLSTM model.
-
-- docs/: Documentation files.
-  - README.md: Main documentation file.
-  - slstm.md: Documentation for sLSTM.
-  - mlstm.md: Documentation for mLSTM.
-  - training.md: Training guide.
-
-- examples/: Example usage scripts.
-  - language_modeling.py: Example script for language modeling with xLSTM.
-
-- .gitignore: Git ignore file to exclude unnecessary files/directories.
-- setup.py: Package setup script.
-- requirements.txt: List of required Python dependencies.
-- README.md: Project README file.
-- LICENSE: Project license file.
+- **.gitignore**: Git ignore file to exclude unnecessary files/directories.
+- **setup.py**: Package setup script.
+- **requirements.txt**: List of required Python dependencies.
+- **README.md**: Project README file.
+- **LICENSE**: Project license file.
 
 ## Running and Testing the Codebase
 
@@ -175,37 +188,6 @@ To run and test the PyxLSTM codebase, follow these steps:
    python -m unittest discover tests
    ```
    This command will run all the unit tests located in the `tests` directory. It will execute the test files `test_slstm.py`, `test_mlstm.py`, `test_block.py`, and `test_model.py`.
-
-5. If all the tests pass successfully, you can proceed to run the example script:
-   ```bash
-   python examples/language_modeling.py --config path/to/config.yaml
-   ```
-   Replace `path/to/config.yaml` with the actual path to your configuration file. The configuration file should specify the dataset paths, model hyperparameters, and other settings.
-
-   The `language_modeling.py` script will train an xLSTM model on the specified dataset using the provided configuration.
-
-6. Monitor the training progress and metrics:
-   During training, the script will display the training progress, including the current epoch, training loss, and validation loss. Keep an eye on these metrics to ensure the model is learning properly.
-
-7. Evaluate the trained model:
-   After training, you can evaluate the trained model on a test dataset using the `evaluate.py` script:
-   ```bash
-   python scripts/evaluate.py --test_data path/to/test_data.txt --vocab_file path/to/vocab.txt --checkpoint_path path/to/checkpoint.pt
-   ```
-   Replace the placeholders with the actual paths to your test data, vocabulary file, and the checkpoint file generated during training.
-
-   The `evaluate.py` script will load the trained model from the checkpoint and evaluate its performance on the test dataset, providing metrics such as test loss and perplexity.
-
-8. Generate text using the trained model:
-   You can use the trained model to generate text using the `generate.py` script:
-   ```bash
-   python scripts/generate.py --vocab_file path/to/vocab.txt --checkpoint_path path/to/checkpoint.pt --prompt "Your prompt text"
-   ```
-   Replace the placeholders with the actual paths to your vocabulary file, checkpoint file, and provide a prompt text to initiate the generation.
-
-   The `generate.py` script will load the trained model and generate text based on the provided prompt.
-
-These steps should help you run and test the PyxLSTM codebase. Make sure you have the necessary dependencies installed and the required data files (train, validation, and test datasets) available.
 
 If you encounter any issues or have further questions, please refer to the PyxLSTM documentation or reach out to the maintainers for assistance.
 
@@ -258,5 +240,18 @@ We hope you find PyxLSTM useful for your sequence modeling projects!
    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=muditbhargava66/PyxLSTM&type=Date" />
  </picture>
 </a>
+
+## TODO
+
+- [x] Add support for Python 3.10
+- [x] Add support for macOS MPS
+- [x] Add support for Windows MPS
+- [x] Add support for Linux MPS
+- [ ] Provide more examples on time series prediction
+- [ ] Include reinforcement learning examples
+- [ ] Add examples for modeling physical systems
+- [ ] Enhance documentation with advanced usage scenarios
+- [ ] Improve unit tests for new features
+- [ ] Add support for bidirectional parameter as it's not implemented in the current xLSTM model
 
 ---

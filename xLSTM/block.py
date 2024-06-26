@@ -1,66 +1,70 @@
+"""
+xLSTM Block Implementation
+
+This module implements the xLSTM block as described in the paper:
+"xLSTM: Extended Long Short-Term Memory" by Beck et al. (2024).
+
+The xLSTM block combines either sLSTM or mLSTM with layer normalization,
+residual connections, and additional linear projections.
+
+Author: Mudit Bhargava
+Date: June 2024
+"""
+
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+from .slstm import sLSTM
+from .mlstm import mLSTM
 
 class xLSTMBlock(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, dropout=0.0, bidirectional=False, lstm_type="slstm"):
+    """
+    xLSTM block implementation.
+
+    This block can use either sLSTM or mLSTM as its core, surrounded by
+    normalization, activation, and projection layers.
+
+    Args:
+        input_size (int): Size of input features.
+        hidden_size (int): Size of hidden state in LSTM.
+        num_layers (int): Number of LSTM layers.
+        dropout (float, optional): Dropout probability. Default: 0.0.
+        lstm_type (str, optional): Type of LSTM to use ('slstm' or 'mlstm'). Default: 'slstm'.
+    """
+
+    def __init__(self, input_size, hidden_size, num_layers, dropout=0.0, lstm_type="slstm"):
         super(xLSTMBlock, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.num_layers = num_layers
         self.dropout = dropout
-        self.bidirectional = bidirectional
         self.lstm_type = lstm_type
 
         if lstm_type == "slstm":
-            from .slstm import sLSTM
             self.lstm = sLSTM(input_size, hidden_size, num_layers, dropout)
         elif lstm_type == "mlstm":
-            from .mlstm import mLSTM
             self.lstm = mLSTM(input_size, hidden_size, num_layers, dropout)
         else:
             raise ValueError(f"Invalid LSTM type: {lstm_type}")
 
-        self.norm = nn.LayerNorm(input_size)
+        self.norm = nn.LayerNorm(hidden_size)
         self.activation = nn.GELU()
         self.dropout_layer = nn.Dropout(dropout)
-
-        if bidirectional:
-            self.proj = nn.Linear(2 * hidden_size, input_size)
-        else:
-            if lstm_type == "mlstm":
-                self.up_proj = nn.Sequential(
-                    nn.Linear(input_size, 4 * input_size), 
-                    nn.GELU(),
-                    nn.Linear(4 * input_size, input_size)
-                )
-            self.proj = nn.Linear(hidden_size, input_size)
-
-        self.reset_parameters()
-
-    def reset_parameters(self):
-        if hasattr(self, "up_proj"):
-            nn.init.xavier_uniform_(self.up_proj[0].weight)
-            nn.init.zeros_(self.up_proj[0].bias)
-            nn.init.xavier_uniform_(self.up_proj[2].weight)
-            nn.init.zeros_(self.up_proj[2].bias)
-
-        nn.init.xavier_uniform_(self.proj.weight)
-        nn.init.zeros_(self.proj.bias)
+        self.proj = nn.Linear(hidden_size, input_size)
 
     def forward(self, input_seq, hidden_state=None):
-        if hasattr(self, "up_proj"):
-            input_seq = self.up_proj(input_seq)
+        """
+        Forward pass of the xLSTM block.
 
+        Args:
+            input_seq (Tensor): Input sequence of shape (batch_size, seq_length, input_size).
+            hidden_state (tuple of Tensors, optional): Initial hidden state. Default: None.
+
+        Returns:
+            tuple: Output sequence and final hidden state.
+        """
         lstm_output, hidden_state = self.lstm(input_seq, hidden_state)
-        if self.lstm_type == "slstm":
-            hidden_state = [[hidden_state[i][0], hidden_state[i][1]] for i in range(len(hidden_state))]
-
-        if self.bidirectional:
-            lstm_output = torch.cat((lstm_output[:, :, :self.hidden_size], lstm_output[:, :, self.hidden_size:]), dim=-1)
-
-        output = self.activation(self.proj(lstm_output))
-        output = self.norm(output + input_seq)
-        output = self.dropout_layer(output)
-
+        output = self.activation(lstm_output)
+        output = self.norm(output)
+        output = self.proj(output)
+        output = self.dropout_layer(output + input_seq)  # Residual connection
         return output, hidden_state

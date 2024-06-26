@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PyxLSTM"
-version = "1.0.1"
+version = "2.0.0"
 authors = [
     { name = "Mudit Bhargava", email = "muditbhargava666@gmail.com" },
 ]
@@ -26,9 +26,19 @@ classifiers = [
 ]
 keywords = ["xLSTM", "LSTM", "language modeling", "sequence modeling"]
 dependencies = [
-    "torch>=1.10.0",
-    "numpy>=1.21.0",
-    "pyyaml>=6.0.0",
+    "torch>=1.7.0",
+    "numpy>=1.19.0",
+    "pyyaml>=5.3.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-cov>=2.10",
+    "pytest-xdist>=2.2",
+    "pytest-timeout>=1.4",
+    "pytest-html>=3.1",
+    "ruff>=0.0.270",
 ]
 
 [project.urls]
@@ -42,3 +52,61 @@ file = "LICENSE"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["xLSTM*"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+]
+
+[tool.ruff]
+# Enable pycodestyle ('E'), pyflakes ('F'), and isort ('I') rules
+select = ["E", "F", "I"]
+ignore = []
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+# Same as Black.
+line-length = 120
+
+# Assume Python 3.6.
+target-version = "py310"
+
+[tool.ruff.lint]
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10
+
+[tool.ruff.lint.per-file-ignores]
+# Ignore imported but unused in __init__.py files
+"__init__.py" = ["F401"]

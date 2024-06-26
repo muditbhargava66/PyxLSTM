@@ -1,93 +1,113 @@
-import argparse
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from xLSTM.model import xLSTM
-from xLSTM.data import LanguageModelingDataset, Tokenizer
-from xLSTM.utils import load_config, set_seed, get_device
+from torch.utils.data import DataLoader
 
-def main(args):
-    """
-    Main function to train the xLSTM model.
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-    Args:
-        args (argparse.Namespace): Command-line arguments.
+from xLSTM import xLSTM
+import time
+import math
 
-    Returns:
-        None
-    """
-    # Load the configuration file
-    config = load_config(args.config)
-    print(f"Loaded configuration file: {args.config}")
+def check_nan(tensor, name):
+    if torch.isnan(tensor).any():
+        print(f"NaN detected in {name}")
+        return True
+    return False
 
-    # Set the random seed for reproducibility
-    set_seed(config.seed)
-    print(f"Set random seed: {config.seed}")
+# Define hyperparameters
+vocab_size = 1000
+embedding_size = 128
+hidden_size = 256
+num_layers = 1
+num_blocks = 2
+batch_size = 64
+seq_length = 20
+num_epochs = 5
+learning_rate = 0.0001
+clip_value = 1.0
 
-    # Get the device (GPU or CPU)
-    device = get_device()
-    print(f"Using device: {device}")
+class DummyDataset(torch.utils.data.Dataset):
+    def __init__(self, vocab_size, seq_length, num_samples):
+        self.data = torch.randint(0, vocab_size, (num_samples, seq_length))
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, idx):
+        return self.data[idx]
 
-    # Initialize the tokenizer
-    tokenizer = Tokenizer(config.vocab_file)
-    print(f"Loaded tokenizer from: {config.vocab_file}")
+device = torch.device("mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu")
+model = xLSTM(vocab_size, embedding_size, hidden_size, num_layers, num_blocks).to(device)
 
-    # Load the training and validation datasets
-    train_dataset = LanguageModelingDataset(config.train_data, tokenizer, config.max_length)
-    print(f"Loaded training dataset from: {config.train_data}")
-    valid_dataset = LanguageModelingDataset(config.valid_data, tokenizer, config.max_length)
-    print(f"Loaded validation dataset from: {config.valid_data}")
+def init_weights(m):
+    if type(m) in [nn.Linear, nn.Embedding]:
+        nn.init.xavier_uniform_(m.weight)
+        if hasattr(m, 'bias') and m.bias is not None:
+            nn.init.constant_(m.bias, 0)
+model.apply(init_weights)
 
-    # Initialize the xLSTM model
-    model = xLSTM(len(tokenizer), config.embedding_size, config.hidden_size,
-                  config.num_layers, config.num_blocks, config.dropout,
-                  config.bidirectional, config.lstm_type)
-    model.to(device)
-    print(f"Initialized xLSTM model with {config.num_layers} layers and {config.num_blocks} blocks")
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
-    # Initialize the optimizer and loss function
-    optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
-    criterion = torch.nn.CrossEntropyLoss(ignore_index=tokenizer.pad_token_id)
-    print(f"Initialized optimizer with learning rate: {config.learning_rate}")
+train_dataset = DummyDataset(vocab_size, seq_length, 1000)
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
-    # Train the model
-    def train(model, train_dataset, valid_dataset, optimizer, criterion, config, device):
-        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True)
-    valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=config.batch_size)
+start_time = time.time()
+for epoch in range(num_epochs):
+    model.train()
+    total_loss = 0
+    for batch_idx, batch in enumerate(train_loader):
+        optimizer.zero_grad()
+        input_seq = batch[:, :-1].to(device)
+        target_seq = batch[:, 1:].to(device)
+        
+        if check_nan(input_seq, "input_seq"):
+            break
+        
+        output, _ = model(input_seq)
+        
+        if check_nan(output, "model output"):
+            break
+        
+        output = output.contiguous().view(-1, vocab_size)
+        target_seq = target_seq.contiguous().view(-1)
+        
+        loss = criterion(output, target_seq)
+        
+        if check_nan(loss, "loss"):
+            break
+        
+        loss.backward()
+        
+        # Gradient clipping
+        torch.nn.utils.clip_grad_norm_(model.parameters(), clip_value)
+        
+        # Check gradients
+        for name, param in model.named_parameters():
+            if param.grad is not None:
+                if check_nan(param.grad, f"gradient of {name}"):
+                    break
+        
+        optimizer.step()
+        
+        # Check parameters after update
+        for name, param in model.named_parameters():
+            if check_nan(param, f"parameter {name} after update"):
+                break
+        
+        total_loss += loss.item()
+        
+        if (batch_idx + 1) % 5 == 0:
+            print(f"Epoch {epoch+1}/{num_epochs}, Batch {batch_idx+1}/{len(train_loader)}, Loss: {loss.item():.4f}")
+    
+    if math.isnan(total_loss):
+        print("NaN detected in total_loss. Stopping training.")
+        break
+    
+    avg_loss = total_loss / len(train_loader)
+    print(f"Epoch {epoch+1}/{num_epochs}, Average Loss: {avg_loss:.4f}")
 
-    for epoch in range(config.num_epochs):
-        model.train()
-        train_loss = 0.0
-        for batch in train_loader:
-            inputs, targets = batch
-            inputs, targets = inputs.to(device), targets.to(device)
-
-            optimizer.zero_grad()
-            outputs, _ = model(inputs)
-            loss = criterion(outputs.view(-1, len(tokenizer)), targets.view(-1))
-            loss.backward()
-            optimizer.step()
-
-            train_loss += loss.item()
-
-        train_loss /= len(train_loader)
-
-        model.eval()
-        valid_loss = 0.0
-        with torch.no_grad():
-            for batch in valid_loader:
-                inputs, targets = batch
-                inputs, targets = inputs.to(device), targets.to(device)
-
-                outputs, _ = model(inputs)
-                loss = criterion(outputs.view(-1, len(tokenizer)), targets.view(-1))
-                valid_loss += loss.item()
-
-        valid_loss /= len(valid_loader)
-
-        print(f"Epoch {epoch+1}/{config.num_epochs} - Train Loss: {train_loss:.4f} - Valid Loss: {valid_loss:.4f}")
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str, required=True, help="Path to configuration file")
-    args = parser.parse_args()
-    main(args)
+end_time = time.time()
+print(f"Training completed! Total time: {end_time - start_time:.2f} seconds")
