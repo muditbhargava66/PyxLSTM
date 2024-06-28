@@ -6,9 +6,13 @@
 [![GitHub license](https://img.shields.io/github/license/muditbhargava66/PyxLSTM)](https://github.com/muditbhargava66/PyxLSTM/blob/main/LICENSE)
 [![Documentation Status](https://readthedocs.org/projects/pyxlstm/badge/?version=latest)](https://pyxlstm.readthedocs.io/en/latest/?badge=latest)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)
+[![CodeQL](https://github.com/muditbhargava66/PyxLSTM/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/muditbhargava66/PyxLSTM/actions/workflows/github-code-scanning/codeql)
 [![GitHub stars](https://img.shields.io/github/stars/muditbhargava66/PyxLSTM)](https://github.com/muditbhargava66/PyxLSTM/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/muditbhargava66/PyxLSTM)](https://github.com/muditbhargava66/PyxLSTM/network/members)
 ![GitHub Releases](https://img.shields.io/github/downloads/muditbhargava66/PyxLSTM/total)
 ![Last Commit](https://img.shields.io/github/last-commit/muditbhargava66/PyxLSTM)
+[![Open Issues](https://img.shields.io/github/issues/muditbhargava66/PyxLSTM)](https://github.com/muditbhargava66/PyxLSTM/issues)
+[![Open PRs](https://img.shields.io/github/issues-pr/muditbhargava66/PyxLSTM)](https://github.com/muditbhargava66/PyxLSTM/pulls)
 
 
 PyxLSTM is a Python library that provides an efficient and extensible implementation of the Extended Long Short-Term Memory (xLSTM) architecture based on the research paper ["xLSTM: Extended Long Short-Term Memory"](https://arxiv.org/abs/2405.04517) by Beck et al. (2024). xLSTM enhances the traditional LSTM by introducing exponential gating, memory mixing, and a matrix memory structure, enabling improved performance and scalability for sequence modeling tasks.
