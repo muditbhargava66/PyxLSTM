@@ -1,0 +1,45 @@
+# .readthedocs.yaml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# Required
+version: 2
+
+# Build documentation in the "docs/" directory with Sphinx
+sphinx:
+  configuration: docs/conf.py
+
+# Define the build environment settings
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.10"
+
+# Define the steps required to install the project's dependencies
+python:
+  install:
+    - requirements: requirements.txt  # Install project dependencies
+    - requirements: docs/requirements.txt  # Install documentation dependencies
+
+# Optionally, define additional formats to build (e.g., PDF, ePub)
+formats:
+  - pdf
+  - epub
+
+# Custom settings for the Read the Docs build process
+# conda:  # Optional, if your project requires conda environments
+#   file: environment.yml
+
+# Optionally, define commands to be executed before or after the build
+# For example, to generate additional API documentation using Sphinx
+# build:
+#   jobs:
+#     post_sphinx:
+#       - sphinx-apidoc -o docs/source/ my_package
+
+# Optionally declare the Python requirements required to build your docs
+python:
+   install:
+   - requirements: docs/requirements.txt
+   - method: pip
+     path: .

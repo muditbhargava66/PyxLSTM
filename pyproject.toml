@@ -43,7 +43,8 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/muditbhargava66/PyxLSTM"
-Repository = "https://github.com/muditbhargava66/PyxLSTM"
+Documentation = "https://PyxLSTM.readthedocs.io/"
+Repository = "https://github.com/muditbhargava66/PyxLSTM.git"
 Issues = "https://github.com/muditbhargava66/PyxLSTM/issues"
 
 [project.license]

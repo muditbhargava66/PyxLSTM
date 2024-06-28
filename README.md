@@ -1,10 +1,15 @@
 # PyxLSTM
 
-![Banner](docs/images/xlstm-logo-v2.png)
+![Banner](assets/xlstm-logo-v2.png)
 
-[![GitHub stars](https://img.shields.io/github/stars/muditbhargava66/PyxLSTM)](https://github.com/muditbhargava66/PyxLSTM/stargazers)
+![Python Version](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9%20%7C%203.10-blue)
 [![GitHub license](https://img.shields.io/github/license/muditbhargava66/PyxLSTM)](https://github.com/muditbhargava66/PyxLSTM/blob/main/LICENSE)
-[![Python version](https://img.shields.io/badge/python-3.6%2B-blue)](https://www.python.org/downloads/)
+[![Documentation Status](https://readthedocs.org/projects/pyxlstm/badge/?version=latest)](https://pyxlstm.readthedocs.io/en/latest/?badge=latest)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)
+[![GitHub stars](https://img.shields.io/github/stars/muditbhargava66/PyxLSTM)](https://github.com/muditbhargava66/PyxLSTM/stargazers)
+![GitHub Releases](https://img.shields.io/github/downloads/muditbhargava66/PyxLSTM/total)
+![Last Commit](https://img.shields.io/github/last-commit/muditbhargava66/PyxLSTM)
+
 
 PyxLSTM is a Python library that provides an efficient and extensible implementation of the Extended Long Short-Term Memory (xLSTM) architecture based on the research paper ["xLSTM: Extended Long Short-Term Memory"](https://arxiv.org/abs/2405.04517) by Beck et al. (2024). xLSTM enhances the traditional LSTM by introducing exponential gating, memory mixing, and a matrix memory structure, enabling improved performance and scalability for sequence modeling tasks.
 
